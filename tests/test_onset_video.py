@@ -273,6 +273,28 @@ class TestProcessFolder:
         assert result.status == "error"
 
 
+def _has_ffmpeg() -> bool:
+    import subprocess
+
+    try:
+        subprocess.run(
+            ["ffmpeg", "-version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return False
+
+
+needs_ffmpeg = pytest.mark.skipif(
+    not _has_ffmpeg(),
+    reason="ffmpeg not found on PATH",
+)
+
+
+@needs_ffmpeg
 class TestBuildVideo:
     """Integration test requiring ffmpeg."""
 
